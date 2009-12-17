@@ -1,0 +1,3 @@
+/dserver is a django server, we can definitely try other things but here it is a start. 
+
+/play is a place to just play with different things. Right now I want to see how threading works with python. 

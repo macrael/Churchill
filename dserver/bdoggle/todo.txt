@@ -1,0 +1,34 @@
+Boggle
+======
+
+Server
+------
+how can we confirm info?
+
+we can check the time, and reverify the words. nothing more. but so long as those two things are constant, the only way they can cheat is by cracking it, which there is no way for us to stop. 
+
+Play
+----
+on load page, don't show a board, and let click "play"
+on laod page, show a fake board: spell something out
+
+when you click on it, start the game.
+
+dont' overwrite at the end of a game. 
+
+maybe shouldn't check words, boggle doesn't. Then the server can prune.
+
+server marks who got your words. non-words are colored red. 
+
+Timer
+-----
+x high 40-up seconds should break by the 10
+x 20 up break by five
+
+As time gets close, color it.
+
+
+Multiple
+========
+* show up, it will tell you if others are ready to play.
+* some one clicks play and there is a countdown. 

@@ -1,0 +1,15 @@
+Go to djangoproject.com follow the instructions to install django on your computer.
+
+In fact, read through/complete the tutorials there, they are very good. 
+
+All you will have to do here to make this site work is copy the settings-base file to be "settings.py" and then edit some parts of it: the media root and the template root need to point to the directories here. 
+
+Setup the database by typing:
+
+python manage.py syncdb
+
+Then you can start a server just by typing:
+
+python manage.py runserver
+
+by default it starts running that server at port 8000 so go to localhost:8000 on your browser and its game on. 
