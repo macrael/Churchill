@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     # Example:
     (r'^$', 'bdoggle.views.index'),
     (r'^join$', 'bdoggle.views.join_game'),
+    (r'^end$', 'bdoggle.views.end_game'),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:

@@ -23,6 +23,8 @@ def join_game(request) :
         print "ERROR"
         return HttpResponse("ERROR -- No Game For You.")
     
+    game.number_of_players += 1
+    game.save()
     print time.mktime(game.start_time.utctimetuple())
     
     game_info = {
@@ -35,3 +37,17 @@ def join_game(request) :
     game_info_encoded = json.dumps(game_info)
     
     return HttpResponse(game_info_encoded)
+    
+def end_game(request) :
+    #need to get the game number back, and their found words. 
+    #one day session stuff will allow us to not recieve back the nubmer. 
+    gnumber = 1
+    words_found = ["hello", "goodbye"]
+    game = Game.objects.filter(pk=gnumber)
+
+    bad_words = control.end_game(game, words_found)
+    end_info = {
+        "bad_words" : bad_words,
+    }
+    end_info_encoded = json.dumps(game_info)
+    return HttpResponse(end_info_encoded)
