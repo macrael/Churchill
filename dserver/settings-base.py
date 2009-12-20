@@ -1,4 +1,4 @@
-# Django settings for churchill project.
+# Django settings for churchill dserver project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -35,7 +35,7 @@ USE_I18N = False
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = '/Users/wmacrae/code/churchill/dserver/static'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -63,9 +63,10 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
-ROOT_URLCONF = 'churchill.urls'
+ROOT_URLCONF = 'dserver.urls'
 
 TEMPLATE_DIRS = (
+    "/Users/wmacrae/code/churchill/dserver/templates",
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -76,5 +77,6 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django_concurrent_test_server',
     'bdoggle'
 )
