@@ -41,13 +41,17 @@ def join_game(request) :
 def end_game(request) :
     #need to get the game number back, and their found words. 
     #one day session stuff will allow us to not recieve back the nubmer. 
-    gnumber = 1
-    words_found = ["hello", "goodbye"]
-    game = Game.objects.filter(pk=gnumber)
-
-    bad_words = control.end_game(game, words_found)
+    data_string = request.GET["data"]
+    print data_string
+    data = json.loads(data_string)
+    gnumber = data["gnumber"]
+    words_found = data["word_list"]
+    game = Game.objects.get(pk=gnumber)
+    bad_words,score = control.end_game(game, words_found)
     end_info = {
         "bad_words" : bad_words,
+        "score" : score,
     }
-    end_info_encoded = json.dumps(game_info)
+    end_info_encoded = json.dumps(end_info)
+    print end_info_encoded
     return HttpResponse(end_info_encoded)

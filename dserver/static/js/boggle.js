@@ -120,7 +120,7 @@ function submit_word(){
 
 function countdown(){
     nowTime = new Date();
-    game_time = 60 * 3 * 1000;
+    game_time = 60 * 3 * 1000; //should be 60 * 3 * 10000
     remaining_seconds = Math.round((game_start_time.getTime() + game_time - nowTime.getTime()) / 1000);
     if (remaining_seconds > game_time/1000){
         seconds_to_game = remaining_seconds - game_time/1000;
@@ -145,7 +145,7 @@ function countdown(){
              if (minutes == 1){
                  text += "s";
              }
-        } else if (remaining_seconds > 10){
+        } else if (remaining_seconds > 20){
             seconds = Math.round(remaining_seconds / 10) * 10;
             text = seconds + " Seconds Remain"
         } else {
@@ -176,24 +176,47 @@ function start_game(){
 function end_game(){
     $("#input_field").attr("disabled","disabled");
     $("#input_field").val("");
-    
-    //format up the variables, send ajax request
-    
     $("#submitted").click();
     
-    var score = 0;
-    for (index in found_words){
-        switch (found_words[index].length){
-            case 1:
-            case 2:
-            case 3: console.log("What? short word!"); break;
-            case 4: score += 1; break;
-            case 5: score += 2; break;
-            case 6: score += 3; break;
-            case 7: score += 5; break;
-            default: score += 11; 
+    var send_data = { "gnumber" : game_number, "word_list" : found_words };
+    console.log(send_data);
+    console.log(JSON.stringify(send_data));
+    var data = JSON.stringify(send_data);
+    //format up the variables, send ajax request
+    console.log(data);
+    
+    //return;
+    
+    $.ajax({
+        contentType:"application/json",
+        data:{"data":data},
+        type:"GET",
+        dataType: "json",
+        cache: false,
+        url: "end",
+        error: function(request, textStatus, errorThrown){
+            $("#ajax_error").text("Error." + request + " st: " + textStatus + " er: " + errorThrown);
+        },
+        success: function(msg, textStatus){
+            console.log("message Recieved. executing. " + textStatus);
+            handle_results(msg);
         }
+    });
+}
+
+function handle_results(data){
+    console.log("recieved data");
+    console.log(data);
+    
+    var bad_words = data["bad_words"];
+    
+    for ( var i =0; i < bad_words.length; i ++){
+        found_words = found_words.splice($.inArray(bad_words[i],found_words));
+        $("#submitted li:contains("+ bad_words[i] +")").addClass("bad");
     }
+    console.log(found_words);
+    
+    var score = data["score"];
     $("#timer").text("Game Over. Your Score: " + score);
 }
 
@@ -218,6 +241,7 @@ $(document).ready(function(){
     
     $("a[href=join]").click(function (){
         event.preventDefault();
+        $("a[href=join]").remove();
         $.ajax({
           dataType: "json",
           cache: false,
