@@ -124,7 +124,7 @@ function countdown(){
     remaining_seconds = Math.round((game_start_time.getTime() + game_time - nowTime.getTime()) / 1000);
     if (remaining_seconds > game_time/1000){
         seconds_to_game = remaining_seconds - game_time/1000;
-        text = "game starts in " + seconds_to_game + "seconds";
+        text = "game starts in " + seconds_to_game + " seconds";
         $("#timer").text(text);
         setTimeout(function(){countdown();},1000);
         return;
@@ -177,6 +177,7 @@ function end_game(){
     $("#input_field").attr("disabled","disabled");
     $("#input_field").val("");
     $("#submitted").click();
+    $("#timer").text("Waiting for other players.");
     
     var send_data = { "gnumber" : game_number, "word_list" : found_words };
     console.log(send_data);
