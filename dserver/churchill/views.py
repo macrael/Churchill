@@ -1,3 +1,4 @@
+import json
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 import control
@@ -34,16 +35,22 @@ def join(request) :
     #they will then poll to find out about new players, or the start of the game. 
     pname = request.POST["name"]
     print pname, "has joined the game."
-    json = control.join_game(pname)
-    print "returning string",json
-    return HttpResponse(json)
+    jsond = control.join_game(pname)
+    print "returning string",jsond
+    return HttpResponse(jsond)
     
 def joining(request) :
-    print "joining.."
     # This is the polling function for joinging the game. 
     # get new player names and tell that the game has started.
-    return HttpResponse("HEYO!")
+    data = json.loads(request.POST["data"])
+    
+    pid = data["pid"]
+    players = data["players"]
+    print pid, "is joining..."
+    jsond = control.joining_poll(players,pid)
+    return HttpResponse(jsond)
     
 def start_game(request) :
-    print "yes"
-    # This is the start game command, tell all other players to start in 5 seconds.
+    pid = request.POST["pid"]
+    jsond = control.start_game(pid)
+    return HttpResponse(jsond)

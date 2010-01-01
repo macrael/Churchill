@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     (r'^init$', 'churchill.views.init'),
     (r'^join$', 'churchill.views.join'),
     (r'^joining$', 'churchill.views.joining'),
+    (r'^start$', 'churchill.views.start_game'),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:

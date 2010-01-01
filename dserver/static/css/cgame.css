@@ -1,0 +1,6 @@
+#player_list li{
+    -webkit-transition: background-color 1s linear;
+}
+.hilight {
+    background-color:yellow;
+}

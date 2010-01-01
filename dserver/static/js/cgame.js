@@ -1,4 +1,8 @@
+"use strict";
+
 var myPlayerID = -1;
+var myName = "";
+var myPlayers = [];
 
 Event.observe(window, 'load', function() {
     $('name').focus();
@@ -7,6 +11,7 @@ Event.observe(window, 'load', function() {
 
 function joinGame(event){
     var player_name = $('name').getValue();
+    myName = player_name;
     console.log("Attempting to join as ",player_name);
     new Ajax.Request('/game/join',
       {
@@ -16,9 +21,18 @@ function joinGame(event){
             joined(transport);
         },
         onFailure: function(transport){
-            $("ajax_error").insert(transport.responseText)
+            $("ajax_error").update(transport.responseText);
         }
       });
+}
+
+function join_add_player(player_name){
+    var player_element = new Element('li').update(player_name);
+    $("player_list").insert(player_element);
+    myPlayers.push(player_name);
+    console.log(myPlayers);
+    //Do something here so that the new player blinks into existance. 
+    //player_element.addClassName("hilight");
 }
 
 function joined(transport){
@@ -27,16 +41,25 @@ function joined(transport){
     //setup the start game button and display all player's names. 
     var data = transport.responseText.evalJSON();
     myPlayerID = data["id"];
-    
+    var other_players = data["players"];
+    for (var i = 0; i < other_players.length; i++ ){
+        console.log(other_players[i] + " is playing.");
+        join_add_player(other_players[i]);
+    }
+    console.log("In Joined");
+    join_add_player(myName);
+    console.log("We Are Requesting Joining.");
+    console.log(myPlayers);
+    var data = JSON.stringify({"pid": myPlayerID, "players": myPlayers})
     new Ajax.Request('/game/joining',
       {
         method:'post',
-        parameters: {"pid": myPlayerID},
+        parameters: {"data" : data},
         onSuccess: function(transport){
             joining(transport);
         },
         onFailure: function(transport){
-            $("ajax_error").insert(transport.responseText)
+            $("ajax_error").update(transport.responseText);
         }
       });
     
@@ -46,12 +69,85 @@ function joined(transport){
 }
 
 function start_button_clicked(e){
-    alert("starting game!");
+    console.log("attempting to start game at server.");
+    
+    new Ajax.Request('/game/start',
+      {
+        method:'post',
+        parameters: {"pid": myPlayerID},
+        onSuccess: function(transport){
+            start_game_returned(transport);
+        },
+        onFailure: function(transport){
+            $("ajax_error").update(transport.responseText);
+        }
+      });
+          
     e.stop();
 }
 
+function start_game_returned(transport){
+    //This may be a pretty useless function, the joining poll is still going to return, probably. 
+    //Really don't need to do anything. could not exist. 
+    console.log("Starting retunred.");
+    console.log(transport);
+    var data = transport.responseText.evalJSON();
+}
+
+function countdown(start_time){
+    game_start_time = new Date(start_time * 1000);
+    nowTime = new Date();
+    remaining_seconds = Math.round((game_start_time.getTime() - nowTime.getTime()) / 1000);
+    if (remaining_seconds > 0){
+        text = "Game Starts in ";
+        text += remaining_seconds + " Second";
+        if (remaining_seconds != 1){
+            text += "s";
+        }
+        
+        $("joining").update(text);
+        setTimeout(function(){countdown(start_time);},1000);
+        return;
+    }
+    $("joining").update("So it begins.");
+}
+
+function start_game(start_time){
+    console.log("Starting at " + start_time);
+    countdown(start_time);
+    //need to get the html for the game (could this be prefetched?)
+    //should know at this point who is king
+    //should know your starting hand and gold and such. 
+    //should start the infinite poll that keeps track of game state.
+}
+
 function joining(transport){
+    console.log("joining...");
+    console.log(transport);
+    var data = transport.responseText.evalJSON();
+    new_players = data["new_players"];
+    started = data["started"];
+    
+    for (i=0; i < new_players.length; i++){
+        //should I check that these players are new?
+        join_add_player(new_players[i]);
+    }
     //if the game is starting, get that going
-    //if the game is not starting, we just poll again? 
-    //what would trigger a not starting. 
+    if (started){
+        start_game(data["start_time"]);
+        return;
+    }else {
+        var data = JSON.stringify({"pid": myPlayerID, "players": myPlayers})
+        new Ajax.Request('/game/joining',
+          {
+            method:'post',
+            parameters: {"data": data},
+            onSuccess: function(transport){
+                joining(transport);
+            },
+            onFailure: function(transport){
+                $("ajax_error").update(transport.responseText);
+            }
+          });
+    }
 }
