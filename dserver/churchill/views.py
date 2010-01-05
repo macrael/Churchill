@@ -54,3 +54,10 @@ def start_game(request) :
     pid = request.POST["pid"]
     jsond = control.start_game(pid)
     return HttpResponse(jsond)
+    
+def full_monty(request):
+    data = json.loads(request.POST["data"])
+    
+    pid = data["pid"]
+    jsond = control.full_monty(pid)
+    return HttpResponse(jsond)

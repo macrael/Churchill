@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     (r'^echo$', 'churchill.views.echo'),
     (r'^init$', 'churchill.views.init'),
     (r'^join$', 'churchill.views.join'),
+    (r'^full$', 'churchill.views.full_monty'),
     (r'^joining$', 'churchill.views.joining'),
     (r'^start$', 'churchill.views.start_game'),
 

@@ -1,9 +1,27 @@
-import data, json, datetime, threading, time
-
-from models import Game,Player
+import data, json, datetime, threading, time, random
+from models import Game, Player
 
 game_events = {}
 game_locks = {}
+
+def csstr_to_list(csstr):
+    cslist = []
+    if csstr == "" :
+        return cslist
+    for s in csstr.split(",") :
+        try :
+            cslist.append(int(s))
+        except ValueError :
+            print "error in ctl:",csstr
+    return cslist
+
+def list_to_csstr(cslist):
+    csstr = ""
+    for i in cslist :
+        csstr += str(i)
+        csstr += ","
+    csstr = csstr[0:-1]
+    return csstr
 
 #initialze everything.
 def initialize() :
@@ -114,18 +132,107 @@ def joining_poll(current_players, player_id):
     print "returning string: " + json_string
     return json_string
 
+def draw_card(game):
+    #This removes the first card from the deck and returns that number. 
+    #Should already have the lock here.
+    #obviously very slow. maybe faster to reverse search
+    deck = game.deck
+    if len(deck) == 0 :
+        print "ERROR: The deck is dry."
+        return -1
+    decknums = csstr_to_list(deck)
+    draw = decknums[0]
+    deck = list_to_csstr(decknums[1:])
+    game.deck = deck
+    game.save()
+    return draw
+
+def game_start_init(game):
+    #We already have the lock here. 
+    #This is the function to deal the initial hand etc. 
+    players = game.player_set.all()
+    #give the game a deck?
+    new_deck = []
+    for i in range(len(data.deck)) :
+        new_deck.append(i)
+    random.shuffle(new_deck)
+    deck_string = list_to_csstr(new_deck)
+    print "Saving the deck:",deck_string
+    game.deck = deck_string
+    game.characters = "0,1,2,3"
+    #for each player, give them a hand, give them gold
+    #give one player the crown
+    noking = True
+    for player in players :
+        if noking :
+            game.king = player.pk
+            noking = False
+        hand = []
+        for i in range(2) : #TODO: SHOULD BE 4 !!
+            hand.append(draw_card(game))
+        player.hand = list_to_csstr(hand)
+        player.gold = 2
+        player.save()
+    
+    game.save()
+    start_round(game)
+
+def start_round(game):
+    characters = csstr_to_list(game.characters)
+    discard = random.choice(characters)
+    remaining = characters[:]
+    remaining.remove(discard)
+    game.remaining_characters = list_to_csstr(remaining)
+    game.visible_characters = str(discard)
+    game.turn = game.king
+    game.round_mode = 1
+    game.save()
+
 def start_game(player_id):
     game = Player.objects.get(pk=player_id).game
     condLock = game_locks[game.pk];
     condLock.acquire()
-    
-    game.started = True
-    game.start_time = datetime.datetime.today() + datetime.timedelta(seconds=10)
-    game.save()
-    
-    condLock.notifyAll()
+    if not game.started :
+        game.started = True
+        game.start_time = datetime.datetime.today() + datetime.timedelta(seconds=10)
+        game.save()
+        game_start_init(game)
+        condLock.notifyAll()
     condLock.release()
-    
     #return the game start time. 
     data = {"start_time" : time.mktime(game.start_time.utctimetuple())}
     return json.dumps(data)
+
+def full_monty(player_id) :
+    #This function should return all the state neccecary for a client to display the game. 
+    print "hello fully monty.",player_id
+    you = {}
+    gameD = {}
+    others = {}
+    you_player = Player.objects.get(pk=player_id)
+    game = you_player.game
+    gameD["mode"] = game.round_mode
+    gameD["king"] = game.king
+    gameD["turn"] = game.turn
+    gameD["v_chars"] = csstr_to_list(game.visible_characters)
+    if game.turn == player_id :
+        gameD["r_chars"] = csstr_to_list(game.remaining_characters)
+    else :
+        gameD["r_chars"] = -1
+    
+    you["gold"] = you_player.gold
+    you["hand"] = csstr_to_list(you_player.hand)
+    you["played"] = csstr_to_list(you_player.played)
+    you["char"] = you_player.character
+    
+    for p in game.player_set.all() :
+        if p.pk == player_id :
+            continue
+        player = {}
+        player["gold"] = you_player.gold
+        player["played"] = csstr_to_list(you_player.played)
+        player["char"] = you_player.character
+        others[p.pk] = player
+    data = { "you" : you, "game" : gameD, "others": others}
+    return json.dumps(data)
+    

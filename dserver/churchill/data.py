@@ -22,17 +22,28 @@ def setup_deck() :
     market.cost = 2
     market.color = GREEN
     deck.append(market)
+    deck.append(market)
+    deck.append(market)
+    deck.append(market)
     
     castle = District()
     castle.name = "Castle"
     castle.cost = 4
     castle.color = GOLD
     deck.append(castle)
+    deck.append(castle)
+    deck.append(castle)
+    deck.append(castle)
+    deck.append(castle)
     
     church = District()
     church.name = "Church"
     church.cost = 3
     church.color = PURPLE
+    deck.append(church)
+    deck.append(church)
+    deck.append(church)
+    deck.append(church)
     deck.append(church)
 
 

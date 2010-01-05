@@ -115,18 +115,44 @@ function countdown(start_time){
 function start_game(start_time){
     console.log("Starting at " + start_time);
     countdown(start_time);
+    full_monty();
     //need to get the html for the game (could this be prefetched?)
+        //most of the frames should be there already. 
     //should know at this point who is king
     //should know your starting hand and gold and such. 
     //should start the infinite poll that keeps track of game state.
+}
+
+function full_monty(){
+    //request the full update, then start the poll.
+    var data = JSON.stringify({"pid": myPlayerID});
+    new Ajax.Request('/game/full',
+      {
+        method:'post',
+        parameters: {"data": data},
+        onSuccess: function(transport){
+            full_monty_return(transport);
+        },
+        onFailure: function(transport){
+            $("ajax_error").update(transport.responseText);
+        }
+      });
+}
+
+function full_monty_return(transport){
+    console.log("full monty");
+    console.log(transport);
+    var data = transport.responseText.evalJSON();
+    
+    console.log(data);
 }
 
 function joining(transport){
     console.log("joining...");
     console.log(transport);
     var data = transport.responseText.evalJSON();
-    new_players = data["new_players"];
-    started = data["started"];
+    var new_players = data["new_players"];
+    var started = data["started"];
     
     for (i=0; i < new_players.length; i++){
         //should I check that these players are new?
@@ -137,7 +163,7 @@ function joining(transport){
         start_game(data["start_time"]);
         return;
     }else {
-        var data = JSON.stringify({"pid": myPlayerID, "players": myPlayers})
+        var data = JSON.stringify({"pid": myPlayerID, "players": myPlayers});
         new Ajax.Request('/game/joining',
           {
             method:'post',
