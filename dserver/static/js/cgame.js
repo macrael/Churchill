@@ -28,7 +28,7 @@ function joinGame(event){
 }
 
 function join_add_player(player_name, player_number){
-    var player_element = new Element('li').update(player_name).writeAttribute("id","player_" + player_number);
+    var player_element = new Element('li').update(player_name).writeAttribute("id","player_" + player_number).addClassName("player");
     $("player_list").insert(player_element);
     myPlayers.push(player_name);
     console.log(myPlayers);
@@ -90,8 +90,8 @@ function start_game_returned(transport){
     //This may be a pretty useless function, the joining poll is still going to return, probably. 
     //Really don't need to do anything. could not exist. 
     console.log("Starting retunred.");
-    console.log(transport);
     var data = transport.responseText.evalJSON();
+    console.log(data);
 }
 
 function countdown(start_time){
@@ -145,6 +145,11 @@ function full_monty_return(transport){
     var data = transport.responseText.evalJSON();
     
     console.log(data);
+    game = data["game"]
+    king_num = game["king"];
+    turn_num = game["turn"];
+    $("player_" + king_num).addClassName("king");
+    $("player_" + turn_num).addClassName("turn");
 }
 
 function joining(transport){

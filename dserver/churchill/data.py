@@ -1,4 +1,5 @@
-deck = []
+cards = []
+fresh_deck = []
 characters = []
 
 GREEN = "green"
@@ -21,30 +22,37 @@ def setup_deck() :
     market.name = "Market"
     market.cost = 2
     market.color = GREEN
-    deck.append(market)
-    deck.append(market)
-    deck.append(market)
-    deck.append(market)
+    cards.append(market)
+    index = cards.index(market)
+    fresh_deck.append(index)
+    fresh_deck.append(index)
+    fresh_deck.append(index)
+    fresh_deck.append(index)
     
     castle = District()
     castle.name = "Castle"
     castle.cost = 4
     castle.color = GOLD
-    deck.append(castle)
-    deck.append(castle)
-    deck.append(castle)
-    deck.append(castle)
-    deck.append(castle)
+    cards.append(castle)
+    index = cards.index(castle)
+    fresh_deck.append(index)
+    fresh_deck.append(index)
+    fresh_deck.append(index)
+    fresh_deck.append(index)
+    fresh_deck.append(index)
+    
     
     church = District()
     church.name = "Church"
     church.cost = 3
     church.color = PURPLE
-    deck.append(church)
-    deck.append(church)
-    deck.append(church)
-    deck.append(church)
-    deck.append(church)
+    cards.append(church)
+    index = cards.index(church)
+    fresh_deck.append(index)
+    fresh_deck.append(index)
+    fresh_deck.append(index)
+    fresh_deck.append(index)
+    fresh_deck.append(index)
 
 
 def setup_characters() :

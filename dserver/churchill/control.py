@@ -4,6 +4,7 @@ from models import Game, Player
 game_events = {}
 game_locks = {}
 
+#----Helper methods to convet to and from comma separated integer strings. 
 def csstr_to_list(csstr):
     cslist = []
     if csstr == "" :
@@ -22,6 +23,8 @@ def list_to_csstr(cslist):
         csstr += ","
     csstr = csstr[0:-1]
     return csstr
+
+#------End helper methods. 
 
 #initialze everything.
 def initialize() :
@@ -96,18 +99,10 @@ def join_game(name):
     info = {"id" : player.pk , "players" : players_data, "number" : player_count}
     return json.dumps(info)
 
-def same_arrays(aone, atwo):
-    for item in aone :
-        if item not in atwo :
-            print item, "not in", atwo
-            return False
-    return True
-
 
 def joining_poll(player_id,player_count):
     #This is a polling request on joining, waiting for players to join and waiting for the game to start.    
     game = Player.objects.get(pk=player_id).game
-    the_players = player_names(game)
     
     condLock = game_locks[game.pk];
     condLock.acquire()
@@ -130,9 +125,9 @@ def joining_poll(player_id,player_count):
             player_data = {"name" : p.name, "number" : p.number}
             players_data.append(player_data)
     
-    data = {"new_players" : players_data, "started": game.started, "start_time" : time.mktime(game.start_time.utctimetuple())}
+    info = {"new_players" : players_data, "started": game.started, "start_time" : time.mktime(game.start_time.utctimetuple())}
     condLock.release()
-    json_string = json.dumps(data)
+    json_string = json.dumps(info)
     print "returning string: " + json_string
     return json_string
 
@@ -156,9 +151,7 @@ def game_start_init(game):
     #This is the function to deal the initial hand etc. 
     players = game.player_set.all()
     #give the game a deck?
-    new_deck = []
-    for i in range(len(data.deck)) :
-        new_deck.append(i)
+    new_deck = data.fresh_deck[:]
     random.shuffle(new_deck)
     deck_string = list_to_csstr(new_deck)
     print "Saving the deck:",deck_string
@@ -169,7 +162,7 @@ def game_start_init(game):
     noking = True
     for player in players :
         if noking :
-            game.king = player.pk
+            game.king = player.number
             noking = False
         hand = []
         for i in range(2) : #TODO: SHOULD BE 4 !!
@@ -204,8 +197,8 @@ def start_game(player_id):
         condLock.notifyAll()
     condLock.release()
     #return the game start time. 
-    data = {"start_time" : time.mktime(game.start_time.utctimetuple())}
-    return json.dumps(data)
+    info = {"start_time" : time.mktime(game.start_time.utctimetuple())}
+    return json.dumps(info)
 
 def full_monty(player_id) :
     #This function should return all the state neccecary for a client to display the game. 
@@ -218,11 +211,11 @@ def full_monty(player_id) :
     gameD["mode"] = game.round_mode
     gameD["king"] = game.king
     gameD["turn"] = game.turn
-    gameD["v_chars"] = csstr_to_list(game.visible_characters)
+    gameD["visible_chars"] = csstr_to_list(game.visible_characters)
     if game.turn == player_id :
-        gameD["r_chars"] = csstr_to_list(game.remaining_characters)
+        gameD["remaining_chars"] = csstr_to_list(game.remaining_characters)
     else :
-        gameD["r_chars"] = -1
+        gameD["remaining_chars"] = -1
     
     you["gold"] = you_player.gold
     you["hand"] = csstr_to_list(you_player.hand)
@@ -238,6 +231,5 @@ def full_monty(player_id) :
         player["char"] = p.character
         player["number"] = p.number 
         others.append(player)
-    data = { "you" : you, "game" : gameD, "others": others}
-    return json.dumps(data)
-    
+    info = { "you" : you, "game" : gameD, "others": others}
+    return json.dumps(info)
