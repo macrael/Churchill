@@ -71,13 +71,6 @@ def join_game(name):
         print "ERROR"
         return HttpResponse("ERROR -- No Game For You.")
     
-    players = game.player_set.all()
-    names = player_names(game)
-    
-    if name in names :
-        names.remove(name)
-        print "You already joined this game, OK."
-    
     condLock = game_locks[game.pk];
     condLock.acquire()
     
@@ -86,15 +79,21 @@ def join_game(name):
     except Player.DoesNotExist :
         player = new_player(name)
         
-    #this needs to be cleaner, people can use the same name?
+    player_count = game.player_set.count()
+    player.number = player_count
     player.game = game
     player.save()
-        
+    
+    players_data = []
+    for p in game.player_set.all() :
+        player_data = {"name" : p.name, "number" : p.number}
+        players_data.append(player_data)
+    
     #should anything be done in this lock?
     condLock.notifyAll()
     condLock.release()
     
-    info = {"id" : player.pk , "players" : names}
+    info = {"id" : player.pk , "players" : players_data, "number" : player_count}
     return json.dumps(info)
 
 def same_arrays(aone, atwo):
@@ -105,29 +104,34 @@ def same_arrays(aone, atwo):
     return True
 
 
-def joining_poll(current_players, player_id):
+def joining_poll(player_id,player_count):
     #This is a polling request on joining, waiting for players to join and waiting for the game to start.    
     game = Player.objects.get(pk=player_id).game
     the_players = player_names(game)
     
     condLock = game_locks[game.pk];
     condLock.acquire()
-    while same_arrays(the_players,current_players) :
+    game_player_count = game.player_set.count()
+    while game_player_count == player_count :
         game = Player.objects.get(pk=player_id).game
         if game.started :
             break
         print player_id, "just went to sleep"
         condLock.wait()
         print player_id, "just woke up"
-        the_players = player_names(game)
-    condLock.release()
+        game_player_count = game.player_set.count()
+    
     print "done with loop."
+    game_player_count = game.player_set.count()
+    players_data = []
+    if game_player_count != player_count:
+        new_players = game.player_set.all()[player_count :]
+        for p in new_players :
+            player_data = {"name" : p.name, "number" : p.number}
+            players_data.append(player_data)
     
-    def notin(x) : return x not in current_players
-    new_players = filter(notin, the_players)
-    
-    data = {"new_players" : new_players, "started": game.started, "start_time" : time.mktime(game.start_time.utctimetuple())}
-    
+    data = {"new_players" : players_data, "started": game.started, "start_time" : time.mktime(game.start_time.utctimetuple())}
+    condLock.release()
     json_string = json.dumps(data)
     print "returning string: " + json_string
     return json_string
@@ -208,7 +212,7 @@ def full_monty(player_id) :
     print "hello fully monty.",player_id
     you = {}
     gameD = {}
-    others = {}
+    others = []
     you_player = Player.objects.get(pk=player_id)
     game = you_player.game
     gameD["mode"] = game.round_mode
@@ -229,10 +233,11 @@ def full_monty(player_id) :
         if p.pk == player_id :
             continue
         player = {}
-        player["gold"] = you_player.gold
-        player["played"] = csstr_to_list(you_player.played)
-        player["char"] = you_player.character
-        others[p.pk] = player
+        player["gold"] = p.gold
+        player["played"] = csstr_to_list(p.played)
+        player["char"] = p.character
+        player["number"] = p.number 
+        others.append(player)
     data = { "you" : you, "game" : gameD, "others": others}
     return json.dumps(data)
     

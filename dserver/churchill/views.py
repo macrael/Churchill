@@ -45,9 +45,9 @@ def joining(request) :
     data = json.loads(request.POST["data"])
     
     pid = data["pid"]
-    players = data["players"]
+    player_count = data["player_count"]
     print pid, "is joining..."
-    jsond = control.joining_poll(players,pid)
+    jsond = control.joining_poll(pid,player_count)
     return HttpResponse(jsond)
     
 def start_game(request) :

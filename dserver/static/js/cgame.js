@@ -2,6 +2,7 @@
 
 var myPlayerID = -1;
 var myName = "";
+var myNumber = -1;
 var myPlayers = [];
 
 Event.observe(window, 'load', function() {
@@ -26,8 +27,8 @@ function joinGame(event){
       });
 }
 
-function join_add_player(player_name){
-    var player_element = new Element('li').update(player_name);
+function join_add_player(player_name, player_number){
+    var player_element = new Element('li').update(player_name).writeAttribute("id","player_" + player_number);
     $("player_list").insert(player_element);
     myPlayers.push(player_name);
     console.log(myPlayers);
@@ -41,16 +42,15 @@ function joined(transport){
     //setup the start game button and display all player's names. 
     var data = transport.responseText.evalJSON();
     myPlayerID = data["id"];
+    myNumber = data["number"]
     var other_players = data["players"];
     for (var i = 0; i < other_players.length; i++ ){
-        console.log(other_players[i] + " is playing.");
-        join_add_player(other_players[i]);
+        console.log(other_players[i]["name"] + " is playing.");
+        join_add_player(other_players[i]["name"], other_players[i]["number"]);
     }
-    console.log("In Joined");
-    join_add_player(myName);
     console.log("We Are Requesting Joining.");
     console.log(myPlayers);
-    var data = JSON.stringify({"pid": myPlayerID, "players": myPlayers})
+    var data = JSON.stringify({"pid": myPlayerID, "player_count": myPlayers.length});
     new Ajax.Request('/game/joining',
       {
         method:'post',
@@ -155,15 +155,14 @@ function joining(transport){
     var started = data["started"];
     
     for (i=0; i < new_players.length; i++){
-        //should I check that these players are new?
-        join_add_player(new_players[i]);
+        join_add_player(new_players[i]["name"], new_players[i]["number"]);
     }
     //if the game is starting, get that going
     if (started){
         start_game(data["start_time"]);
         return;
     }else {
-        var data = JSON.stringify({"pid": myPlayerID, "players": myPlayers});
+        var data = JSON.stringify({"pid": myPlayerID, "player_count": myPlayers.length});
         new Ajax.Request('/game/joining',
           {
             method:'post',
