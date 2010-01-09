@@ -239,7 +239,7 @@ $(document).ready(function(){
     });
     
     
-    $("a[href=join]").click(function (){
+    $("a[href=join]").click(function (event){
         event.preventDefault();
         $("a[href=join]").remove();
         $.ajax({
