@@ -1,48 +1,32 @@
 game_start_time = 0;
 good_wordlist = [];
 found_words = [];
-all_cubes = [
-    ["A","F","I","R","S","Y"],
-    ["A","D","E","N","N","N"],
-    ["A","E","E","E","E","M"],
-    ["A","A","A","F","R","S"],
-    ["A","E","G","M","N","N"],
-    ["A","A","E","E","E","E"],
-    ["A","E","E","G","M","U"],
-    ["A","A","F","I","R","S"],
-    ["B","J","K","Qu","X","Z"],
-    ["C","C","E","N","S","T"],
-    ["C","E","I","L","P","T"],
-    ["C","E","I","I","L","T"],
-    ["C","E","I","P","S","T"],
-    ["D","H","L","N","O","R"],
-    ["D","H","L","N","O","R"],
-    ["D","D","H","N","O","T"],
-    ["D","H","H","L","O","R"],
-    ["E","N","S","S","S","U"],
-    ["E","M","O","T","T","T"],
-    ["E","I","I","I","T","T"],
-    ["F","I","P","R","S","Y"],
-    ["G","O","R","R","V","W"],
-    ["I","P","R","R","R","Y"],
-    ["N","O","O","T","U","W"],
-    ["O","O","O","T","T","U"]
-];
 
+board_rep = "";
+game_number = -1;
 board = [[],[],[],[],[]];
+game_started = false;
+
+function join_game(data){
+    console.log(data)
+    board_rep = data["board"];
+    game_number = data["number"];
+    game_start_time = new Date(data["start_time"]* 1000);
+    console.log("start: " + game_start_time);
+    
+    countdown()
+}
 
 function setup_board(){
-    cubes = all_cubes.slice(0);
-    
     $("#board").empty();
     board_string = "<table>";
     for (i=0; i < 5; i ++){
         board_string += "<tr>";
         for (j=0; j < 5; j++){
-            cube_index = Math.floor( Math.random() * cubes.length); 
-            cube = cubes[cube_index];
-            cubes.splice(cube_index,1);//for some reason slice turns the cube into a string.
-            value = cube[Math.floor(Math.random() * cube.length)];
+            value = board_rep[5*i + j];
+            if (value == 'Q'){
+                value = "Qu";
+            }
             board[i][j] = value;
             board_string += "<td>"+ value + "</td>";
         }
@@ -136,9 +120,19 @@ function submit_word(){
 
 function countdown(){
     nowTime = new Date();
-    game_time = 60 * 3 * 1000;
+    game_time = 60 * 3 * 1000; //should be 60 * 3 * 10000
     remaining_seconds = Math.round((game_start_time.getTime() + game_time - nowTime.getTime()) / 1000);
+    if (remaining_seconds > game_time/1000){
+        seconds_to_game = remaining_seconds - game_time/1000;
+        text = "game starts in " + seconds_to_game + "seconds";
+        $("#timer").text(text);
+        setTimeout(function(){countdown();},1000);
+        return;
+    }
     if (remaining_seconds > 0){
+        if (!game_started){
+            start_game()
+        }
         text = "";
          if (remaining_seconds > 60){
              minutes = Math.round(remaining_seconds / 60);
@@ -151,7 +145,7 @@ function countdown(){
              if (minutes == 1){
                  text += "s";
              }
-        } else if (remaining_seconds > 10){
+        } else if (remaining_seconds > 20){
             seconds = Math.round(remaining_seconds / 10) * 10;
             text = seconds + " Seconds Remain"
         } else {
@@ -174,10 +168,9 @@ function countdown(){
 
 function start_game(){
     setup_board();
-    game_start_time = new Date();
+    game_started = true;
     $("#input_field").attr("enabled","enabled");
     $("#input_field").focus();
-    countdown();
 }
 
 function end_game(){
@@ -185,19 +178,45 @@ function end_game(){
     $("#input_field").val("");
     $("#submitted").click();
     
-    var score = 0;
-    for (index in found_words){
-        switch (found_words[index].length){
-            case 1:
-            case 2:
-            case 3: console.log("What? short word!"); break;
-            case 4: score += 1; break;
-            case 5: score += 2; break;
-            case 6: score += 3; break;
-            case 7: score += 5; break;
-            default: score += 11; 
+    var send_data = { "gnumber" : game_number, "word_list" : found_words };
+    console.log(send_data);
+    console.log(JSON.stringify(send_data));
+    var data = JSON.stringify(send_data);
+    //format up the variables, send ajax request
+    console.log(data);
+    
+    //return;
+    
+    $.ajax({
+        contentType:"application/json",
+        data:{"data":data},
+        type:"GET",
+        dataType: "json",
+        cache: false,
+        url: "end",
+        error: function(request, textStatus, errorThrown){
+            $("#ajax_error").text("Error." + request + " st: " + textStatus + " er: " + errorThrown);
+        },
+        success: function(msg, textStatus){
+            console.log("message Recieved. executing. " + textStatus);
+            handle_results(msg);
         }
+    });
+}
+
+function handle_results(data){
+    console.log("recieved data");
+    console.log(data);
+    
+    var bad_words = data["bad_words"];
+    
+    for ( var i =0; i < bad_words.length; i ++){
+        found_words = found_words.splice($.inArray(bad_words[i],found_words));
+        $("#submitted li:contains("+ bad_words[i] +")").addClass("bad");
     }
+    console.log(found_words);
+    
+    var score = data["score"];
     $("#timer").text("Game Over. Your Score: " + score);
 }
 
@@ -219,6 +238,20 @@ $(document).ready(function(){
         check_for_word();
     });
     
-    start_game();
+    
+    $("a[href=join]").click(function (){
+        event.preventDefault();
+        $("a[href=join]").remove();
+        $.ajax({
+          dataType: "json",
+          cache: false,
+          url: "join",
+          success: function(msg){
+            join_game(msg);
+          }
+        });
+    });
+    
+    //start_game();
     
 });

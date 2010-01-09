@@ -31,3 +31,14 @@ h1{
 #sidebar {
     float:right;
 }
+
+.bad{
+    text-decoration: line-through;
+}
+
+footer {
+    clear:both;
+    font-size: .5em;
+    text-align: center;
+    display:block;
+}
