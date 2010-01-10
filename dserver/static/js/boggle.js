@@ -124,7 +124,7 @@ function countdown(){
     remaining_seconds = Math.round((game_start_time.getTime() + game_time - nowTime.getTime()) / 1000);
     if (remaining_seconds > game_time/1000){
         seconds_to_game = remaining_seconds - game_time/1000;
-        text = "game starts in " + seconds_to_game + "seconds";
+        text = "game starts in " + seconds_to_game + " seconds";
         $("#timer").text(text);
         setTimeout(function(){countdown();},1000);
         return;
