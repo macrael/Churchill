@@ -230,7 +230,7 @@ $(document).ready(function(){
       }
     });
     
-    $("#input_field").keyup(function (){
+    $("#input_field").keyup(function (event){
         if (event.keyCode == 13){//Return Key Pressed
             submit_word();
             return;
@@ -239,7 +239,7 @@ $(document).ready(function(){
     });
     
     
-    $("a[href=join]").click(function (){
+    $("a[href=join]").click(function (event){
         event.preventDefault();
         $("a[href=join]").remove();
         $.ajax({
