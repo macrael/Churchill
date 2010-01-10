@@ -177,6 +177,7 @@ function end_game(){
     $("#input_field").attr("disabled","disabled");
     $("#input_field").val("");
     $("#submitted").click();
+    $("#timer").text("Waiting for other players.");
     
     var send_data = { "gnumber" : game_number, "word_list" : found_words };
     console.log(send_data);
@@ -184,7 +185,6 @@ function end_game(){
     var data = JSON.stringify(send_data);
     //format up the variables, send ajax request
     console.log(data);
-    
     //return;
     
     $.ajax({

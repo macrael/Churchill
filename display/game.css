@@ -1,0 +1,140 @@
+html {
+    font-family: Verdana, Helvetica;
+    font-size:10px;
+}
+
+/*--------------Players----------------*/
+
+#players {
+    padding:0;
+    margin:0;
+    text-align:center;
+}
+
+#players li {
+    text-align:left;
+    list-style:none;
+    display: inline-block;
+    border: 1px solid black;
+    padding: 10px;
+    margin: 5px;
+    -webkit-border-radius: 10px;
+    background-color: none;
+    width: 230px;
+}
+
+#players li:hover{
+    background-color:lightgrey;
+}
+
+#players li .name {
+    display:block;
+    font-size:20px;
+    margin-bottom:10px;
+}
+
+#players li .count {
+    background-repeat:no-repeat;
+    font-size:15px;
+    padding: 1px 0 1px 20px;
+/*    outline: 1px black solid;*/
+}
+
+#players li .gold {
+    background-image:url(gold_coin.png);
+}
+
+#players li .hand_size {
+    background-image:url(hand.png);
+}
+
+#players li .cards_played {
+    background-image:url(castle.gif);
+}
+
+#players li .net_worth {
+    background-image:url(net_worth.png);
+}
+
+#players img.avatar {
+    float:left;
+    margin-right: 10px;
+}
+
+#players .turn {
+    background-color: lightgreen;
+}
+#players .king {
+    border-color:yellow;
+}
+
+/*---------------Characters---------------*/
+
+#characters {
+    font-size:20px;   
+}
+
+#characters .discarded{
+    text-decoration: line-through;
+}
+
+#characters .assassinated{
+    text-decoration:line-through;
+    color:darkred;
+}
+
+#characters .name{
+	list-style-type: disc;
+}
+
+#characters .thieved .name{
+    color:darkgreen;
+}
+
+/*----------------Hand-----------------*/
+
+#hand{
+    
+}
+
+/*----------------districts-----------*/
+
+.district {
+    float:left;
+    display: block;
+    border: 1px solid black;
+    padding: 10px;
+    margin: 5px;
+    -webkit-border-radius: 10px;
+    width:150px;
+    font-size:12px;
+}
+.district .name {
+    font-size:18px;
+}
+
+.district .cost{
+    float: right;
+    font-size:20px;
+    font-family:Futura;
+}
+
+.purple{
+    background-color:#C639FF;
+}
+
+.blue{
+    background-color:lightblue;
+}
+
+.green{
+    background-color:lightgreen;
+}
+
+.yellow{
+    background-color:#FFED73;
+}
+
+.red{
+    background-color:#FF6164;
+}

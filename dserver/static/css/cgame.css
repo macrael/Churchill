@@ -1,0 +1,23 @@
+#player_list li{
+
+}
+.hilight {
+    background-color:yellow;
+}
+
+.player {
+    width: 200px;
+    border: 2px solid black;
+    -webkit-border-radius: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 5px;
+    background-color: none;
+}
+
+.turn {
+    background-color: lightgreen;
+}
+.king {
+    border-color:yellow;
+}

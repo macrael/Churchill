@@ -78,5 +78,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django_concurrent_test_server',
-    'bdoggle'
+    'bdoggle',
+    'churchill'
 )
