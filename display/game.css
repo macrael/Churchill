@@ -118,3 +118,23 @@ html {
     font-size:20px;
     font-family:Futura;
 }
+
+.purple{
+    background-color:#C639FF;
+}
+
+.blue{
+    background-color:lightblue;
+}
+
+.green{
+    background-color:lightgreen;
+}
+
+.yellow{
+    background-color:#FFED73;
+}
+
+.red{
+    background-color:#FF6164;
+}
