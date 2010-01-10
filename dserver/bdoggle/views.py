@@ -5,7 +5,7 @@ from bdoggle import control
 import datetime, json, time
 
 def index(request) :
-    return render_to_response('bdoggle/index.html', {'game_count': Game.objects.count(), 'current_time': time.time()})
+    return render_to_response('bdoggle/index.html', {'game_count': Game.objects.count(), 'current_time': int(time.time())})
     
 #This function returns what is neccecary to start a game. 
 def join_game(request) :
