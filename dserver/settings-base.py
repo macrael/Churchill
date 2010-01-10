@@ -78,6 +78,10 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django_concurrent_test_server',
+<<<<<<< HEAD
     'bdoggle',
     'churchill'
+=======
+    'bdoggle'
+>>>>>>> will/master
 )
