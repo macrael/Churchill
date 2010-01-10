@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Citadel</title>
+	<link rel="stylesheet" href="game.css" />
+</head>
+<body>
+	<ol id="players">
+		<li id="player_0">
+			<img class="avatar" height="55px" width="55px" src="macrae_avatar.png" />
+			<span class="name">MacRae</span>
+			<span class="count gold">14</span>
+			<span class="count hand_size">12</span>
+			<span class="count cards_played">3</span>
+			<span class="count net_worth">23</span>
+		</li>
+		<li id="player_1">
+			<img class="avatar" src="no_face.png" />
+			<span class="name">Sam</span>
+			<span class="count gold">2</span>
+			<span class="count hand_size">0</span>
+			<span class="count cards_played">4</span>
+			<span class="count net_worth">8</span>
+		</li>
+		<li id="player_2">
+			<img class="avatar" src="no_face.png" />
+			<span class="name">Eliot</span>
+			<span class="count gold">0</span>
+			<span class="count hand_size">3</span>
+			<span class="count cards_played">6</span>
+			<span class="count net_worth">20</span>
+		</li>
+		<li id="player_0" class="turn">
+			<img class="avatar" src="no_face.png" />
+			<span class="name">Will</span>
+			<span class="count gold">4</span>
+			<span class="count hand_size">2</span>
+			<span class="count cards_played">3</span>
+			<span class="count net_worth">13</span>
+		</li>
+		<li id="player_1" class="king">
+			<img class="avatar" src="no_face.png" />
+			<span class="name">Chistopher</span>
+			<span class="count gold">2</span>
+			<span class="count hand_size">0</span>
+			<span class="count cards_played">4</span>
+			<span class="count net_worth">8</span>
+		</li>
+		<li id="player_2">
+			<img class="avatar" src="no_face.png" />
+			<span class="name">Wes Mantooth</span>
+			<span class="count gold">0</span>
+			<span class="count hand_size">3</span>
+			<span class="count cards_played">6</span>
+			<span class="count net_worth">20</span>
+		</li>
+		<li id="player_2">
+			<img class="avatar" src="no_face.png" />
+			<span class="name">Edward</span>
+			<span class="count gold">0</span>
+			<span class="count hand_size">3</span>
+			<span class="count cards_played">6</span>
+			<span class="count net_worth">20</span>
+		</li>
+	</ol>
+	<ol id="characters">
+		<li id="assassin">
+			<span class="name">Assassin</span>
+			—
+			<span class="player">MacRae</span>
+		</li>
+		<li id="thief">
+			<span class="name">Thief</span>
+			—
+			<span class="player">Edward</span>
+		</li>
+		<li id="magician" class="assassinated">
+			<span class="name">Magician</span>
+		</li>
+		<li id="king">
+			<span class="name">King</span>
+			—
+			<span class="player">Christopher</span>
+		</li>
+		<li class="discarded" id="bishop">
+			<span class="name">Bishop</span>
+		</li>
+		<li id="merchant">
+			<span class="name">Merchant</span>
+			—
+			<span class="player">Will</span>
+		</li>
+		<li class="thieved" id="architect">
+			<span class="name">Architect</span>
+		</li>
+		<li id="warlord">
+			<span class="name">Warlord</span>
+		</li>
+	</ol>
+	<div id="hand">
+		<h1>Your Hand:</h1>
+		<div class="district purple">
+			<div class="cost">3</div>
+			<div class="name">Watchtower</div>
+			<div class="description">
+				The watchtower cannot be destroyed by the warlord.
+			</div>
+		</div>
+		<div class="district yellow">
+			<div class="cost">5</div>
+			<div class="name">Castle</div>
+		</div>
+		<div class="district green">
+			<div class="cost">1</div>
+			<div class="name">Market</div>
+		</div>
+	</div>
+	
+</body>
+</html>
