@@ -47,11 +47,7 @@ def new_game() :
     game = Game()
     game.start_time = datetime.datetime.today() + datetime.timedelta(seconds=30)#(seconds=120)
     game.board = random_board()
-<<<<<<< HEAD
     gameEvent = threading.Event()
-=======
-    gameEvent = threading.Event()    
->>>>>>> will/master
     game.save()
     game_id = game.pk
     game_events[game_id] = gameEvent

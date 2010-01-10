@@ -185,17 +185,6 @@ function end_game(){
     var data = JSON.stringify(send_data);
     //format up the variables, send ajax request
     console.log(data);
-    
-<<<<<<< HEAD
-=======
-    var send_data = { "gnumber" : game_number, "word_list" : found_words };
-    console.log(send_data);
-    console.log(JSON.stringify(send_data));
-    var data = JSON.stringify(send_data);
-    //format up the variables, send ajax request
-    console.log(data);
-    
->>>>>>> will/master
     //return;
     
     $.ajax({
