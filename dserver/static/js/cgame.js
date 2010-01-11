@@ -29,7 +29,7 @@ function joinGame(event){
 
 function join_add_player(player_name, player_number){
     var player_element = new Element('li').update(player_name).writeAttribute("id","player_" + player_number).addClassName("player");
-    $("player_list").insert(player_element);
+    $("players").insert(player_element);
     myPlayers.push(player_name);
     console.log(myPlayers);
     //Do something here so that the new player blinks into existance. 
@@ -139,17 +139,74 @@ function full_monty(){
       });
 }
 
+function add_player_object(player){
+    var p = new Element('li').writeAttribute("id","player_" + player["number"]).addClassName("player");
+    var name = new Element('span').update(player["name"]).addClassName("name");
+    if (player["number"] === myNumber){
+        name.update("You");
+    }
+    p.insert(name);
+    var gold = new Element('span').update(player["gold"]).addClassName("gold").addClassName("count");
+    p.insert(gold);
+    var hand_size = new Element('span').update(player["hand_size"]).addClassName("hand_size").addClassName("count");//needs to be sent
+    p.insert(hand_size);
+    var cards_played = new Element('span').update(player["played"].length).addClassName("cards_played").addClassName("count");
+    p.insert(cards_played);
+    var net_worth = new Element('span').update("-1").addClassName("net_worth").addClassName("count"); //needs to be calcualted
+    p.insert(net_worth);
+    $("players").insert(p);
+}
+
+function add_card_to_hand(card_index){
+    //how to do this? we will have to translate.
+}
+
+function add_character(character_index){
+    console.log("cindex: " + character_index);
+    console.log(the_characters);
+    var character = the_characters[character_index];
+    console.log("adding character");
+    console.log(character);
+    c_element = new Element('li').writeAttribute("id","character_" +character_index ).addClassName("character");
+    c_element.update(character.name);
+    $("characters").insert(c_element);
+}
+
+function mark_character_discarded(character_index){
+    $("character_" + character_index).addClassName("discarded");
+}
+
 function full_monty_return(transport){
     console.log("full monty");
     console.log(transport);
     var data = transport.responseText.evalJSON();
-    
     console.log(data);
-    game = data["game"]
-    king_num = game["king"];
-    turn_num = game["turn"];
+    //players
+    setup_deck();
+    console.log(the_deck);
+    setup_characters();
+    console.log(the_characters);
+    
+    var you = data["you"];
+    myNumber = you["number"];
+    var hand = you["hand"];
+    hand.each(add_card_to_hand);
+    
+    $("players").update("");//this won't be neccecary in the future. 
+    var players = $A(data["players"]);
+    players.each(add_player_object);
+    
+    var game = data["game"];
+    var king_num = game["king"];
+    var turn_num = game["turn"];
+    var characters = $A(game["characters"]);
+    characters.each(add_character);
+    var vis_chars = $A(game["visible_chars"]);
+    vis_chars.each(mark_character_discarded)
     $("player_" + king_num).addClassName("king");
     $("player_" + turn_num).addClassName("turn");
+    
+    console.log("Done With The Monty.");
 }
 
 function joining(transport){
