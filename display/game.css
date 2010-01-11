@@ -19,6 +19,7 @@ html {
     padding: 10px;
     margin: 5px;
     -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
     background-color: none;
     width: 230px;
 }
@@ -71,7 +72,9 @@ html {
 /*---------------Characters---------------*/
 
 #characters {
+    float:left;
     font-size:20px;   
+    margin-right:20px;
 }
 
 #characters .discarded{
@@ -106,6 +109,7 @@ html {
     padding: 10px;
     margin: 5px;
     -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
     width:150px;
     font-size:12px;
 }

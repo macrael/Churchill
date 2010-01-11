@@ -156,7 +156,7 @@ def game_start_init(game):
     deck_string = list_to_csstr(new_deck)
     print "Saving the deck:",deck_string
     game.deck = deck_string
-    game.characters = "0,1,2,3"
+    game.characters = "0,1,2,3,4,5,6,7"
     #for each player, give them a hand, give them gold
     #give one player the crown
     noking = True
@@ -205,31 +205,30 @@ def full_monty(player_id) :
     print "hello fully monty.",player_id
     you = {}
     gameD = {}
-    others = []
+    players = []
     you_player = Player.objects.get(pk=player_id)
     game = you_player.game
     gameD["mode"] = game.round_mode
     gameD["king"] = game.king
     gameD["turn"] = game.turn
+    gameD["characters"] = csstr_to_list(game.characters)
     gameD["visible_chars"] = csstr_to_list(game.visible_characters)
     if game.turn == player_id :
         gameD["remaining_chars"] = csstr_to_list(game.remaining_characters)
     else :
         gameD["remaining_chars"] = -1
     
-    you["gold"] = you_player.gold
+    you["number"] = you_player.number
     you["hand"] = csstr_to_list(you_player.hand)
-    you["played"] = csstr_to_list(you_player.played)
-    you["char"] = you_player.character
-    
+        
     for p in game.player_set.all() :
-        if p.pk == player_id :
-            continue
         player = {}
         player["gold"] = p.gold
         player["played"] = csstr_to_list(p.played)
         player["char"] = p.character
         player["number"] = p.number 
-        others.append(player)
-    info = { "you" : you, "game" : gameD, "others": others}
+        player["name"] = p.name
+        player["hand_size"] = len(csstr_to_list(you_player.hand))
+        players.append(player)
+    info = { "you" : you, "game" : gameD, "players": players}
     return json.dumps(info)
