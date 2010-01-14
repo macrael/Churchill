@@ -63,6 +63,8 @@ function joined(transport){
         }
       });
     
+    $("page_header").update("Citadels &#8212; Waiting for Game Start");
+    
     var start_link = new Element('a', { href: '/game/start' }).update("Start Game").observe('click',start_button_clicked);
     
     $("joining").update(start_link);
@@ -89,12 +91,12 @@ function start_button_clicked(e){
 function start_game_returned(transport){
     //This may be a pretty useless function, the joining poll is still going to return, probably. 
     //Really don't need to do anything. could not exist. 
-    console.log("Starting retunred.");
+    console.log("Starting returned.");
     var data = transport.responseText.evalJSON();
     console.log(data);
 }
 
-function countdown(start_time){
+function countdown(start_time,callback_fn){
     game_start_time = new Date(start_time * 1000);
     nowTime = new Date();
     remaining_seconds = Math.round((game_start_time.getTime() - nowTime.getTime()) / 1000);
@@ -106,16 +108,18 @@ function countdown(start_time){
         }
         
         $("joining").update(text);
-        setTimeout(function(){countdown(start_time);},1000);
+        setTimeout(function(){countdown(start_time,callback_fn);},1000);
         return;
     }
-    $("joining").update("So it begins.");
+    else {
+        $("joining").update("So it begins.");
+        callback_fn();
+    }
 }
 
 function start_game(start_time){
     console.log("Starting at " + start_time);
-    countdown(start_time);
-    full_monty();
+    countdown(start_time, full_monty);
     //need to get the html for the game (could this be prefetched?)
         //most of the frames should be there already. 
     //should know at this point who is king
@@ -167,9 +171,22 @@ function add_character(character_index){
     var character = the_characters[character_index];
     console.log("adding character");
     console.log(character);
-    c_element = new Element('li').writeAttribute("id","character_" +character_index ).addClassName("character");
-    c_element.update(character.name);
-    $("characters").insert(c_element);
+    char_img = get_character_image(character);
+    char_element = new Element('div').writeAttribute("id","character_" +character_index ).addClassName(character);
+    char_element.insert(char_img);
+    char_element.insert("<br>");
+    char_element.insert(character.name);
+    char_container_element = new Element('li').addClassName("char_container");
+    char_container_element.update(char_element);
+    $("characters").insert(char_container_element);
+}
+
+function get_character_image(character){
+    switch(character.name) {
+        default:
+            return new Element('img').writeAttribute("src","/static/graphics/unchar.png");
+            break;
+    }
 }
 
 function mark_character_discarded(character_index){
@@ -192,7 +209,7 @@ function full_monty_return(transport){
     var hand = you["hand"];
     hand.each(add_card_to_hand);
     
-    $("players").update("");//this won't be neccecary in the future. 
+    $("players").update("");//this won't be necessary in the future. 
     var players = $A(data["players"]);
     players.each(add_player_object);
     
