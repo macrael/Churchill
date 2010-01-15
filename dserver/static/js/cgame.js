@@ -4,6 +4,7 @@ var myPlayerID = -1;
 var myName = "";
 var myNumber = -1;
 var myPlayers = [];
+var currently_selected_character = null;
 
 Event.observe(window, 'load', function() {
     $('name').focus();
@@ -119,7 +120,8 @@ function countdown(start_time,callback_fn){
 
 function start_game(start_time){
     console.log("Starting at " + start_time);
-    countdown(start_time, full_monty);
+    countdown(start_time, null); //full_monty);
+    full_monty();
     //need to get the html for the game (could this be prefetched?)
         //most of the frames should be there already. 
     //should know at this point who is king
@@ -172,18 +174,38 @@ function add_character(character_index){
     console.log("adding character");
     console.log(character);
     char_img = get_character_image(character);
-    char_element = new Element('div').writeAttribute("id","character_" +character_index ).addClassName(character);
+    char_element = new Element('div').writeAttribute("id","character_" +character_index ).addClassName("character");
     char_element.insert(char_img);
     char_element.insert("<br>");
     char_element.insert(character.name);
     char_container_element = new Element('li').addClassName("char_container");
     char_container_element.update(char_element);
     $("characters").insert(char_container_element);
+    char_container_element.observe('click',select_character);
+}
+
+function select_character(event) {
+    var new_select = event.target;
+    if(!new_select.hasClassName('char_container')) {
+        new_select = event.currentTarget;
+    }
+    if(currently_selected_character != null) {
+        currently_selected_character.removeClassName("selected");
+    }
+    new_select.addClassName("selected");
+    currently_selected_character = new_select;
 }
 
 function get_character_image(character){
     switch(character.name) {
-        default:
+        case "Assassin":
+        case "Theif":
+        case "Magician":
+        case "King":
+        case "Priest":
+        case "Merchant":
+        case "Architect":
+         case "Warlord":
             return new Element('img').writeAttribute("src","/static/graphics/unchar.png");
             break;
     }
