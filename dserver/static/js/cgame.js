@@ -239,6 +239,7 @@ function full_monty_return(transport){
     var king_num = game["king"];
     var turn_num = game["turn"];
     var characters = $A(game["characters"]);
+    $('characters_section').addClassName('full');
     characters.each(add_character);
     var vis_chars = $A(game["visible_chars"]);
     vis_chars.each(mark_character_discarded)
