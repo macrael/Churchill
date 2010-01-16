@@ -307,15 +307,38 @@ function status(transport){
             console.log("Not ready for this mode.");
         }
     }else{
-        
-        
+        set_unique_character_class("turn", game["turn"]);
         seek_status();
     }
-    
-    
 }
 
 function choose_character(character_list){
+    chooser = new Element('div').writeAttribute("id","chooser");
+    characters = new Element('ol').addClassName("characters");
+    cids = $A(character_list);
+    for (var i=0; i < cids.length; i ++){
+        char_element = character_element(cids[i]);
+        char_element.writeAttribute("id","choose_character_" + cids[i]);
+        characters.insert(char_element);
+        char_element.observe('click',select_character);
+        char_element.id_num = cids[i];
+    }
+    submit = new Element('div').writeAttribute("id","chooser_submit").update("Choose Character");
+    submit.observe('click',choose_selected);
+    chooser.insert(characters);
+    chooser.insert(submit);
+    $("main").insert({ top:chooser });
+}
+
+function choose_selected(event){
+    if (currently_selected_character == null){
+        return;
+    }
+    
+    var cid = currently_selected_character.id_num;
+    console.log("Choosing character id: " + cid);
+    
+    
 }
 
 function joining(transport){
