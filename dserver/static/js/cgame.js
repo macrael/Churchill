@@ -50,6 +50,7 @@ function joined(transport){
         console.log(other_players[i]["name"] + " is playing.");
         join_add_player(other_players[i]["name"], other_players[i]["number"]);
     }
+    $("players_section").show();
     console.log("We Are Requesting Joining.");
     console.log(myPlayers);
     var data = JSON.stringify({"pid": myPlayerID, "player_count": myPlayers.length});
@@ -190,7 +191,6 @@ function character_element(character_index){
     char_img = get_character_image(character);
     char_element = new Element('li').addClassName("character");
     char_element.insert(char_img);
-    char_element.insert("<br>");
     char_element.insert(character.name);
     
     return char_element;
@@ -217,8 +217,8 @@ function get_character_image(character){
         case "Priest":
         case "Merchant":
         case "Architect":
-         case "Warlord":
-            return new Element('img').writeAttribute("src","/static/graphics/unchar.png");
+        case "Warlord":
+            return new Element('div').addClassName("char_image").addClassName("unchar");
             break;
     }
 }
@@ -243,6 +243,7 @@ function full_monty_return(transport){
     myNumber = you["number"];
     var hand = you["hand"];
     hand.each(add_card_to_hand);
+    $("hand").show();
     
     $("players").update("");//this won't be necessary in the future. 
     var players = $A(data["players"]);
@@ -302,7 +303,7 @@ function status(transport){
     var myturn = data["myturn"];
     if (myturn) {
         if (game.mode == 1){
-            choose_character(game["remaining_characters"]);
+            choose_character(game["remaining_characters"], game["visible_discards"]);
         }else{
             console.log("Not ready for this mode.");
         }
@@ -312,8 +313,8 @@ function status(transport){
     }
 }
 
-function choose_character(character_list){
-    chooser = new Element('div').writeAttribute("id","chooser");
+function choose_character(character_list, discard_list){
+    chooser = $("action_body");
     characters = new Element('ol').addClassName("characters");
     cids = $A(character_list);
     for (var i=0; i < cids.length; i ++){
@@ -322,12 +323,25 @@ function choose_character(character_list){
         characters.insert(char_element);
         char_element.observe('click',select_character);
         char_element.id_num = cids[i];
+        
+        choose_button = new Element('button').update('Choose');
+        choose_button.observe('click',choose_selected);
+        choose_container = new Element('div').addClassName('choose_container').update(choose_button);
+        
+        char_element.insert(choose_container);
     }
-    submit = new Element('div').writeAttribute("id","chooser_submit").update("Choose Character");
-    submit.observe('click',choose_selected);
+    disc_cids = $A(discard_list);
+    for (var i=0; i < disc_cids.length; i ++){
+        char_element = character_element(disc_cids[i]);
+        char_element.writeAttribute("id","discarded_character_" + disc_cids[i]);
+        characters.insert(char_element);
+        char_element.id_num = disc_cids[i];
+        char_element.addClassName("discarded")
+    }
     chooser.insert(characters);
-    chooser.insert(submit);
-    $("main").insert({ top:chooser });
+    chooser.setStyle({minHeight: "160px"});
+    $("action_header").update("Please choose a character");
+    $("action_section").show();
 }
 
 function choose_selected(event){

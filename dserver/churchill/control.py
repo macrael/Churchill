@@ -162,6 +162,7 @@ def status_poll(pid, turn):
         gameD["mode"] = game.round_mode
         if mode == 1 :
             gameD["remaining_characters"] = csstr_to_list(game.remaining_characters)
+            gameD["visible_discards"] = csstr_to_list(game.visible_discards)
         else :
             print "HMM.. Not ready for this mode."
     
@@ -220,6 +221,7 @@ def start_round(game):
     discard = random.choice(characters)
     remaining = characters[:]
     remaining.remove(discard)
+    game.visible_discards = discard
     game.remaining_characters = list_to_csstr(remaining)
     game.visible_characters = str(discard)
     game.turn = game.king

@@ -11,6 +11,7 @@ class Game(models.Model):
     characters = models.CommaSeparatedIntegerField(max_length=25,default="")
     remaining_characters = models.CommaSeparatedIntegerField(max_length=25,default="")
     visible_characters = models.CommaSeparatedIntegerField(max_length=10,default="")
+    visible_discards = models.CommaSeparatedIntegerField(max_length=10,default="")
 
 #eventually, we will have profiles, and maybe they will be tied to players? Players are tied
 # to a game? Or no. I'm not sure. Maybe there is no need for a separate class.
