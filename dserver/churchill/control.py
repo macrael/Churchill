@@ -155,7 +155,7 @@ def status_poll(pid, turn):
         #actualy, probably not, they can just redo, so long as they don't get to make a choice twice. 
     info = {}
     gameD = {}
-    
+    player = Player.objects.get(pk=pid)
     info["myturn"] = game.turn == player.number
     if info["myturn"] :
         mode = game.round_mode
@@ -169,8 +169,54 @@ def status_poll(pid, turn):
     
     info["game"] = gameD
     
+    condLock.release()
+    
     return json.dumps(info)
 
+def take_action(pid, actionD):
+    player = Player.objects.get(pk=pid)
+    game = player.game
+    lock = game_locks[game.pk]
+    lock.acquire()
+    action = actionD["action"]
+    info = {}
+    info["success"] = True
+    if action == "choose_character" :
+        if game.round_mode != 1 :
+            print "ERROR: shouldn't be choosing characters at a time like this."
+            info["success"] = False
+        choice = actionD["character"]
+        remaining = csstr_to_list(game.remaining_characters)
+        if choice not in remaining :
+            print "ERROR: character is not a valid choice."
+            info["success"] = False
+        remaining.remove(choice)
+        game.remaining_characters = list_to_csstr(remaining)
+        game.save()
+    
+    
+    next_turn(game)
+    lock.notifyAll()
+    lock.release()
+    
+    return json.dumps(info)
+    
+    
+def next_turn(game):
+    if game.round_mode == 1 :
+        turn = game.turn
+        turn += 1
+        turn = turn % game.player_set.count()
+        game.turn = turn
+        if turn == game.king :
+            #mode is over.
+            game.round_mode = 2
+            
+    else :
+        print "Hmm. not ready for this mode."
+        
+    print "Game Turn is now:", game.turn, "mode:",game.round_mode
+    game.save()
 
 def draw_card(game):
     #This removes the first card from the deck and returns that number. 

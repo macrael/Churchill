@@ -257,15 +257,15 @@ function full_monty_return(transport){
     characters.each(add_character);
     var vis_chars = $A(game["visible_chars"]);
     vis_chars.each(mark_character_discarded)
-    set_unique_character_class("king", king_num);
-    set_unique_character_class("turn", turn_num);
+    set_unique_player_class("king", king_num);
+    set_unique_player_class("turn", turn_num);
     
     console.log("Done With The Monty.");
     
     seek_status();
 }
 
-function set_unique_character_class(classname, player_num){
+function set_unique_player_class(classname, player_num){
     var players = $("players").childElements();
     console.log(players);
     for (var i = 0; i < players.length; i++){
@@ -300,6 +300,8 @@ function status(transport){
     var data = transport.responseText.evalJSON();
     var game = data["game"];
     var myturn = data["myturn"];
+    set_unique_player_class("turn", game["turn"]);
+    current_turn = game["turn"];
     if (myturn) {
         if (game.mode == 1){
             choose_character(game["remaining_characters"]);
@@ -307,7 +309,6 @@ function status(transport){
             console.log("Not ready for this mode.");
         }
     }else{
-        set_unique_character_class("turn", game["turn"]);
         seek_status();
     }
 }
@@ -338,7 +339,42 @@ function choose_selected(event){
     var cid = currently_selected_character.id_num;
     console.log("Choosing character id: " + cid);
     
+    $("chooser").remove();
+    $("character_" + cid).addClassName("your_character");
     
+    $("log").insert("<p>You have chosen character #" + cid + "</p>");
+    
+    
+    var data = JSON.stringify({"pid": myPlayerID, "action":"choose_character", "character": cid});
+    new Ajax.Request('/game/action',
+      {
+        method:'post',
+        parameters: {"data": data},
+        onSuccess: function(transport){
+            action_return(transport);
+        },
+        onFailure: function(transport){
+            $("ajax_error").update(transport.responseText);
+        }
+      });
+}
+
+function action_return(transport){
+    console.log("action returned.");
+    var data = transport.responseText.evalJSON();
+    console.log(data);
+    
+    if (data["success"]){
+        console.log("Success!");
+        //current_turn = data["turn"];
+        //set_unique_player_class("turn", current_turn);
+        //I think that this should be in the status seeking, actually.
+        //the action doesn't need to ruturn anything. 
+    }else {
+        console.log("FAIL!");
+    }
+    
+    seek_status();
 }
 
 function joining(transport){

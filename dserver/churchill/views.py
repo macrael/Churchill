@@ -69,3 +69,9 @@ def status(request):
     jsond = control.status_poll(pid, turn)
     return HttpResponse(jsond)
 
+def action(request):
+    data = json.loads(request.POST["data"])
+    pid = data["pid"]
+    
+    jsond = control.take_action(pid,data)
+    return HttpResponse(jsond)

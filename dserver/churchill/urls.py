@@ -14,5 +14,6 @@ urlpatterns = patterns('',
     (r'^joining$', 'churchill.views.joining'),
     (r'^start$', 'churchill.views.start_game'),
     (r'^status$', 'churchill.views.status'),
+    (r'^action$', 'churchill.views.action'),
 
 )

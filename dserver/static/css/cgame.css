@@ -1,3 +1,5 @@
+/* @override http://localhost:8000/static/css/cgame.css */
+
 html {
     font-family: Verdana, Helvetica;
     font-size:10px;
@@ -119,6 +121,11 @@ html {
     text-align: center;
     width:80px;
 }
+
+.characters li.your_character {
+    background-color: #D2D112;
+}
+
 .characters li.selected {
     background-color: #B3FF99;
     border: 1px solid #008020;
@@ -193,15 +200,36 @@ div#characters_section.full {
 
 /*-------------Chooser--------------*/
 #chooser {
-    clear:both;
     text-align:center;
-/*    position: absolute;*/
+    position: fixed;
+    background:-webkit-gradient(linear, left top, left bottom,
+		to(rgba(90,90,90,.9)), 
+		to(rgba(90,90,90,.9)));
+    left: 0;
+    top: 0;
+    right:0;
+    bottom:0;
+}
+
+#chooser .characters {
+	width: 800px;
+	height: 150px;
+	margin: 200px auto 0 auto;
+	padding: 0;
+	float: none;
+}
+
+#chooser .character {
+	background-color: yellowgreen;
 }
 
 #chooser_submit{
     margin: 0 auto;
     font-size:18px;
     border: 2px black solid;
+    width: 200px;
+    clear: both;
+    background-color: lightgoldenrodyellow;
 }
 
 #chooser_submit:hover{
