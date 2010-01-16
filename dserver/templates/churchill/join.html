@@ -11,29 +11,33 @@
 <div id="main">
 <h1 id="page_header">Citadels &#8212; Join Game</h1>
 <div id="joining">
-Name: 
-<input id="name" type="text" />
-<input id="joinbutton" type="submit" />
+    Name: 
+    <input id="name" type="text" />
+    <input id="joinbutton" type="submit" />
 </div>
 <div id="game_status"></div>
 
-<div id="characters_section">
-<ol id="characters" class="characters">
-	
-</ol>
+<div id="action_section" style="display: none;" class="section">
+    <h2 id="action_header" class="section_header">Currently...</h2>
+    <div id="action_body"></div>
 </div>
 
-<div id="hand">
-	<h1>Your Hand:</h1>
-</div>
-<div id="resources">
+<div id="resources" style="display: none;" class="section">
+    <h2 id="resources_header" class="section_header">Your Resources</h2>
 </div>
 
-<div id="players_section">
+<div id="hand" style="display: none;" class="section">
+    <h2 id="hand_header" class="section_header">Your Hand</h2>
+</div>
 
-<ol id="players">
-        
-</ol>
+<div id="players_section" class="section" style="display: none;">
+    <h2 id="players_header" class="section_header">Players</h2>
+    <ol id="players"></ol>
+</div>
+
+<div id="characters_section" class="section" style="display: none;">
+    <h2 id="characters_header" class="section_header">Characters Being Used</h2>
+    <ol id="all_characters" class="characters"></ol>
 </div>
 
 <footer>

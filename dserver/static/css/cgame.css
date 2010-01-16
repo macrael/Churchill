@@ -8,11 +8,27 @@ html {
 
 #main {
     margin: 6px auto;
-    padding:0px 15px;
+    padding:0px 15px 15px 15px;
     text-align:left;
     width:940px;
     background-color: white;
     border: 2px solid black;
+}
+
+div.section {
+    border: 1px solid #666666;
+    background-color: #FAFAFA;
+    overflow: auto;
+    margin: 15px 0px;
+}
+
+h2.section_header {
+    margin: 2px 6px 0px 6px;
+    border-bottom: 2px solid #DCDCDC;
+}
+
+div.text_body {
+    padding: 8px;
 }
 
 /*--------------Players----------------*/
@@ -85,26 +101,37 @@ html {
 /*---------------Characters---------------*/
 
 .characters {
-    float:left;
-    font-size:16px;   
-    margin-right:20px;
-    display:block;
+    float: left;
+    font-size: 16px;
+    margin: 15px;
+    padding: 0px;
+    display: block;
 }
 
-.characters .discarded{
+.characters .discarded {
     text-decoration: line-through;
+    background-color: #EB725C;
 }
 
-.characters .assassinated{
+.characters .discarded:hover {
+    background-color: #EBB0A5;
+}
+.characters .discarded:active {
+    padding: 8px 6px;
+    background-color: #EBB0A5;
+    border: 1px solid black;
+}
+
+.characters .assassinated {
     text-decoration:line-through;
     color:darkred;
 }
 
-.characters .name{
+.characters .name {
 	list-style-type: disc;
 }
 
-.characters .thieved .name{
+.characters .thieved .name {
     color:darkgreen;
 }
 
@@ -116,7 +143,7 @@ html {
     border: 1px solid black;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
-    background-color: none;
+    background-color: white;
     cursor: pointer;
     text-align: center;
     width:80px;
@@ -137,17 +164,21 @@ html {
     background-color: #99FFB3;
     border: 1px solid #008020;
 }
-.characters li:active, #characters li.selected:active {
+.characters li.button:active, #characters li.selected.button:active {
     padding: 9px 5px 7px 7px;
     background-color: #7AFFA4;
     border: 1px solid #00FF40;
 }
-
-div#characters_section.full {
-    border: 1px solid #333333;
-    background-color: #FAFAFA;
-    overflow: auto;
+div.char_image {
+    text-decoration: none;
+    width: 60px;
+    height: 60px;
+    margin: 0px auto;
 }
+div.unchar {
+    background-image:url(/static/graphics/unchar.png);
+}
+
 /*----------------Hand-----------------*/
 
 #hand{
@@ -199,6 +230,7 @@ div#characters_section.full {
 
 
 /*-------------Chooser--------------*/
+<<<<<<< HEAD
 #chooser {
     text-align:center;
     position: fixed;
@@ -231,12 +263,16 @@ div#characters_section.full {
     clear: both;
     background-color: lightgoldenrodyellow;
 }
+=======
+>>>>>>> will/master
 
-#chooser_submit:hover{
-    background-color: lightblue;
+.choose_container {
+    /* border-top: 1px solid #008020; */
+    margin-top: 4px;
+    text-align: center;
+    display: none;
 }
 
-#chooser_submit:active {
-    background-color: blue;
+.selected .choose_container {
+    display: inline;
 }
-
