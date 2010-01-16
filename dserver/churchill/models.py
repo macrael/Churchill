@@ -10,7 +10,6 @@ class Game(models.Model):
     king = models.IntegerField(default= -1) #character number.
     characters = models.CommaSeparatedIntegerField(max_length=25,default="")
     remaining_characters = models.CommaSeparatedIntegerField(max_length=25,default="")
-    visible_characters = models.CommaSeparatedIntegerField(max_length=10,default="")
     visible_discards = models.CommaSeparatedIntegerField(max_length=10,default="")
 
 #eventually, we will have profiles, and maybe they will be tied to players? Players are tied

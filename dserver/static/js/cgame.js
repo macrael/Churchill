@@ -308,7 +308,7 @@ function status(transport){
     current_turn = game["turn"];
     if (myturn) {
         if (game.mode == 1){
-            choose_character(game["remaining_characters"], game["visible_discards"]);
+            choose_character(game["remaining_characters"]);
         }else{
             console.log("Not ready for this mode.");
         }
@@ -317,8 +317,8 @@ function status(transport){
     }
 }
 
-function choose_character(character_list, discard_list){
-    chooser = $("action_body").update('').removeClassName('text_body');
+function choose_character(character_list){
+    chooser = new Element('div').writeAttribute("id", "chooser");
     characters = new Element('ol').addClassName("characters");
     cids = $A(character_list);
     for (var i=0; i < cids.length; i ++){
@@ -328,25 +328,13 @@ function choose_character(character_list, discard_list){
         char_element.observe('click',select_character);
         char_element.id_num = cids[i];
         char_element.addClassName("button");
-        
-        choose_button = new Element('button').update('Choose');
-        choose_button.observe('click',choose_selected);
-        choose_container = new Element('div').addClassName('choose_container').update(choose_button);
-        
-        char_element.insert(choose_container);
-    }
-    disc_cids = $A(discard_list);
-    for (var i=0; i < disc_cids.length; i ++){
-        char_element = character_element(disc_cids[i]);
-        char_element.writeAttribute("id","discarded_character_" + disc_cids[i]);
-        characters.insert(char_element);
-        char_element.id_num = disc_cids[i];
-        char_element.addClassName("discarded")
     }
     chooser.insert(characters);
-    chooser.setStyle({minHeight: "160px"});
+    choose_button = new Element('button').update('Choose Character');
+    choose_button.observe('click',choose_selected);
+    chooser.insert(choose_button);
     $("action_header").update("Please choose a character");
-    $("action_section").show();
+    $("main").insert({top: chooser});
 }
 
 function choose_selected(event){
@@ -361,7 +349,7 @@ function choose_selected(event){
     $("character_" + cid).addClassName("your_character");
     
     $("log").insert("<p>You have chosen character #" + cid + "</p>");
-    
+    $("action_header").update("Currently...");
     
     var data = JSON.stringify({"pid": myPlayerID, "action":"choose_character", "character": cid});
     new Ajax.Request('/game/action',

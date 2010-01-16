@@ -162,7 +162,6 @@ def status_poll(pid, turn):
         gameD["mode"] = game.round_mode
         if mode == 1 :
             gameD["remaining_characters"] = csstr_to_list(game.remaining_characters)
-            gameD["visible_discards"] = csstr_to_list(game.visible_discards)
         else :
             print "HMM.. Not ready for this mode."
     
@@ -192,6 +191,8 @@ def take_action(pid, actionD):
             print "ERROR: character is not a valid choice."
             info["success"] = False
         remaining.remove(choice)
+        player.character = choice
+        player.save()
         game.remaining_characters = list_to_csstr(remaining)
         game.save()
     
@@ -269,7 +270,6 @@ def start_round(game):
     remaining.remove(discard)
     game.visible_discards = discard
     game.remaining_characters = list_to_csstr(remaining)
-    game.visible_characters = str(discard)
     game.turn = game.king
     game.round_mode = 1
     game.save()
@@ -301,7 +301,7 @@ def full_monty(player_id) :
     gameD["king"] = game.king
     gameD["turn"] = game.turn
     gameD["characters"] = csstr_to_list(game.characters)
-    gameD["visible_chars"] = csstr_to_list(game.visible_characters)
+    gameD["visible_chars"] = csstr_to_list(game.visible_discards)
     
     you["number"] = you_player.number
     you["hand"] = csstr_to_list(you_player.hand)
