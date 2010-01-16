@@ -182,7 +182,7 @@ function add_character(character_index){
     console.log("cindex: " + character_index);
     chelement = character_element(character_index);
     chelement.writeAttribute("id","character_" +character_index );
-    $("characters").insert(chelement);
+    $("all_characters").insert(chelement);
 }
 
 function character_element(character_index){
@@ -249,12 +249,15 @@ function full_monty_return(transport){
     var players = $A(data["players"]);
     players.each(add_player_object);
     
+    $("action_body").update(players[0].name + " is choosing a character.").addClassName('text_body');;
+    $("action_section").show();
+    
     var game = data["game"];
     var king_num = game["king"];
     var turn_num = game["turn"];
     current_turn = game["turn"];
     var characters = $A(game["characters"]);
-    $('characters_section').addClassName('full');
+    $('characters_section').show();
     characters.each(add_character);
     var vis_chars = $A(game["visible_chars"]);
     vis_chars.each(mark_character_discarded)
@@ -314,7 +317,7 @@ function status(transport){
 }
 
 function choose_character(character_list, discard_list){
-    chooser = $("action_body");
+    chooser = $("action_body").update('').removeClassName('text_body');
     characters = new Element('ol').addClassName("characters");
     cids = $A(character_list);
     for (var i=0; i < cids.length; i ++){
@@ -323,6 +326,7 @@ function choose_character(character_list, discard_list){
         characters.insert(char_element);
         char_element.observe('click',select_character);
         char_element.id_num = cids[i];
+        char_element.addClassName("button");
         
         choose_button = new Element('button').update('Choose');
         choose_button.observe('click',choose_selected);

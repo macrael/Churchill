@@ -25,6 +25,10 @@ h2.section_header {
     border-bottom: 2px solid #DCDCDC;
 }
 
+div.text_body {
+    padding: 8px;
+}
+
 /*--------------Players----------------*/
 
 #players {
@@ -153,7 +157,7 @@ h2.section_header {
     background-color: #99FFB3;
     border: 1px solid #008020;
 }
-.characters li:active, #characters li.selected:active {
+.characters li.button:active, #characters li.selected.button:active {
     padding: 9px 5px 7px 7px;
     background-color: #7AFFA4;
     border: 1px solid #00FF40;

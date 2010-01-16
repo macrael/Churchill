@@ -152,7 +152,7 @@ def status_poll(pid, turn):
     #if the turn has changed, the mode could have changed. mostly doesn't matter. 
     #if it is your turn, we can mostly assume you haven't done anything...
         #at some point we will have to worry if they started their turn, then reloaded? 
-        #actualy, probably not, they can just redo, so long as they don't get to make a choice twice. 
+        #actually, probably not, they can just redo, so long as they don't get to make a choice twice. 
     info = {}
     gameD = {}
     
