@@ -61,3 +61,11 @@ def full_monty(request):
     pid = data["pid"]
     jsond = control.full_monty(pid)
     return HttpResponse(jsond)
+
+def status(request):
+    data = json.loads(request.POST["data"])
+    pid = data["pid"]
+    turn = data["turn"]
+    jsond = control.status_poll(pid, turn)
+    return HttpResponse(jsond)
+

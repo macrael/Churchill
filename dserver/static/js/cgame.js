@@ -4,6 +4,7 @@ var myPlayerID = -1;
 var myName = "";
 var myNumber = -1;
 var myPlayers = [];
+var current_turn  = -1;
 var currently_selected_character = null;
 
 Event.observe(window, 'load', function() {
@@ -114,7 +115,8 @@ function countdown(start_time,callback_fn){
     }
     else {
         $("joining").update("So it begins.");
-        callback_fn();
+        //calling the null callback is giving us an error. I think we will do something different for the actual start of the game anyway.
+        //callback_fn();
     }
 }
 
@@ -164,29 +166,39 @@ function add_player_object(player){
 }
 
 function add_card_to_hand(card_index){
-    //how to do this? we will have to translate.
+    console.log("Adding card " + card_index + " to hand.");
+    var card = the_deck[card_index];
+    card_element = new Element('div').addClassName("district"); //should we give every card its own ID?
+    card_element.addClassName(card.color);
+    card_element.insert(new Element('div').addClassName("cost").update(card.cost));
+    card_element.insert(new Element('div').addClassName("name").update(card.name));
+    //description may not be for every one. 
+//    card_element.insert(new Element('div').addClassName("description").update(card.cost));
+    $("hand").insert(card_element);
 }
 
 function add_character(character_index){
     console.log("cindex: " + character_index);
-    console.log(the_characters);
+    chelement = character_element(character_index);
+    chelement.writeAttribute("id","character_" +character_index );
+    $("characters").insert(chelement);
+}
+
+function character_element(character_index){
     var character = the_characters[character_index];
-    console.log("adding character");
     console.log(character);
     char_img = get_character_image(character);
-    char_element = new Element('div').writeAttribute("id","character_" +character_index ).addClassName("character");
+    char_element = new Element('li').addClassName("character");
     char_element.insert(char_img);
     char_element.insert("<br>");
     char_element.insert(character.name);
-    char_container_element = new Element('li').addClassName("char_container");
-    char_container_element.update(char_element);
-    $("characters").insert(char_container_element);
-    char_container_element.observe('click',select_character);
+    
+    return char_element;
 }
 
 function select_character(event) {
     var new_select = event.target;
-    if(!new_select.hasClassName('char_container')) {
+    if(!new_select.hasClassName('character')) {
         new_select = event.currentTarget;
     }
     if(currently_selected_character != null) {
@@ -215,6 +227,7 @@ function mark_character_discarded(character_index){
     $("character_" + character_index).addClassName("discarded");
 }
 
+//The fully monty should only have to happen once per load of the game. Right?
 function full_monty_return(transport){
     console.log("full monty");
     console.log(transport);
@@ -238,15 +251,71 @@ function full_monty_return(transport){
     var game = data["game"];
     var king_num = game["king"];
     var turn_num = game["turn"];
+    current_turn = game["turn"];
     var characters = $A(game["characters"]);
     $('characters_section').addClassName('full');
     characters.each(add_character);
     var vis_chars = $A(game["visible_chars"]);
     vis_chars.each(mark_character_discarded)
-    $("player_" + king_num).addClassName("king");
-    $("player_" + turn_num).addClassName("turn");
+    set_unique_character_class("king", king_num);
+    set_unique_character_class("turn", turn_num);
     
     console.log("Done With The Monty.");
+    
+    seek_status();
+}
+
+function set_unique_character_class(classname, player_num){
+    var players = $("players").childElements();
+    console.log(players);
+    for (var i = 0; i < players.length; i++){
+        if (players[i].hasClassName(classname)){
+            players[i].removeClassName(classname);
+        }
+    }
+    $("player_" + player_num ).addClassName(classname);
+    console.log("Finished adding " + classname);
+}
+
+function seek_status(){
+    var data = JSON.stringify({"pid": myPlayerID, "turn":current_turn});
+    new Ajax.Request('/game/status',
+      {
+        method:'post',
+        parameters: {"data": data},
+        onSuccess: function(transport){
+            status(transport);
+        },
+        onFailure: function(transport){
+            $("ajax_error").update(transport.responseText);
+        }
+      });
+}
+
+//this is the return from the status of the game. could be your turn, another turn could have ended.
+function status(transport){
+    console.log("status returns.");
+    console.log(transport.responseText.evalJSON());
+    
+    var data = transport.responseText.evalJSON();
+    var game = data["game"];
+    var myturn = data["myturn"];
+    if (myturn) {
+        if (game.mode == 1){
+            choose_character(game["remaining_characters"]);
+        }else{
+            console.log("Not ready for this mode.");
+        }
+    }else{
+        
+        
+        seek_status();
+    }
+    
+    
+}
+
+function choose_character(character_list){
 }
 
 function joining(transport){

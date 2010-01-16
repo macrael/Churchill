@@ -131,6 +131,47 @@ def joining_poll(player_id,player_count):
     print "returning string: " + json_string
     return json_string
 
+def status_poll(pid, turn):
+    game = Player.objects.get(pk=pid).game
+    condLock = game_locks[game.pk];
+    condLock.acquire()
+    game_turn = game.turn
+    while game_turn == turn :
+        player = Player.objects.get(pk=pid)
+        game = player.game
+        if game.turn == player.number :
+            break
+        print pid, "just went to sleep."
+        condLock.wait()
+        print pid, "just woke up."
+        player = Player.objects.get(pk=pid)
+        game = player.game
+        game_turn = game.turn
+    
+    #either, it is your turn, or the turn has changed.(or both)
+    #if the turn has changed, the mode could have changed. mostly doesn't matter. 
+    #if it is your turn, we can mostly assume you haven't done anything...
+        #at some point we will have to worry if they started their turn, then reloaded? 
+        #actualy, probably not, they can just redo, so long as they don't get to make a choice twice. 
+    info = {}
+    gameD = {}
+    
+    info["myturn"] = game.turn == player.number
+    if info["myturn"] :
+        mode = game.round_mode
+        gameD["mode"] = game.round_mode
+        if mode == 1 :
+            gameD["remaining_characters"] = csstr_to_list(game.remaining_characters)
+        else :
+            print "HMM.. Not ready for this mode."
+    
+    gameD["turn"] = game.turn
+    
+    info["game"] = gameD
+    
+    return json.dumps(info)
+
+
 def draw_card(game):
     #This removes the first card from the deck and returns that number. 
     #Should already have the lock here.
@@ -213,10 +254,6 @@ def full_monty(player_id) :
     gameD["turn"] = game.turn
     gameD["characters"] = csstr_to_list(game.characters)
     gameD["visible_chars"] = csstr_to_list(game.visible_characters)
-    if game.turn == player_id :
-        gameD["remaining_chars"] = csstr_to_list(game.remaining_characters)
-    else :
-        gameD["remaining_chars"] = -1
     
     you["number"] = you_player.number
     you["hand"] = csstr_to_list(you_player.hand)
