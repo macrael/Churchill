@@ -233,9 +233,16 @@ div.unchar {
 #chooser {
     text-align:center;
     position: fixed;
+    
+    background:url(/static/graphics/gray_back.png);
+    
     background:-webkit-gradient(linear, left top, left bottom,
 		to(rgba(90,90,90,.9)), 
 		to(rgba(90,90,90,.9)));
+	/*This is only in firefox 3.6 which isn't out yet.*/
+    background: -moz-linear-gradient( left top, left bottom,
+        stop(0,rgba(90,90,90,.9)),                      
+        stop(100,rgba(90,90,90,.9)));
     left: 0;
     top: 0;
     right:0;
