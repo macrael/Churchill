@@ -19,7 +19,7 @@ class Player(models.Model):
     name = models.CharField(max_length=100)
     number = models.IntegerField() #This is the order the players joined the game. 
     gold = models.IntegerField(default=0)
-    character = models.IntegerField(default=-1) #characters are 0-7 their order of play.
+    character = models.IntegerField(default=-1) #characters are 0-whatever, their number.
     hand = models.CommaSeparatedIntegerField(max_length=100,default="")
     played = models.CommaSeparatedIntegerField(max_length=100,default="")
     

@@ -168,14 +168,18 @@ function add_player_object(player){
 
 function add_card_to_hand(card_index){
     console.log("Adding card " + card_index + " to hand.");
+    var card_element = card_for_index(card_index);
+    $("hand").insert(card_element);
+}
+
+function card_for_index(card_index){
     var card = the_deck[card_index];
-    card_element = new Element('div').addClassName("district"); //should we give every card its own ID?
-    card_element.addClassName(card.color);
+    var card_element = new Element('div').addClassName("district"); //should we give every card its own ID?
     card_element.insert(new Element('div').addClassName("cost").update(card.cost));
     card_element.insert(new Element('div').addClassName("name").update(card.name));
     //description may not be for every one. 
 //    card_element.insert(new Element('div').addClassName("description").update(card.cost));
-    $("hand").insert(card_element);
+    return card_element;
 }
 
 function add_character(character_index){
@@ -309,7 +313,9 @@ function status(transport){
     if (myturn) {
         if (game.mode == 1){
             choose_character(game["remaining_characters"]);
-        }else{
+        }else if (game.mode==2) {
+            take_turn();
+        }else {
             console.log("Not ready for this mode.");
         }
     }else{
@@ -317,12 +323,70 @@ function status(transport){
     }
 }
 
+function take_turn() {
+    var chooser = new Element('div').writeAttribute("id", "chooser");
+    var choices = new Element("div").addClassName("choices");
+    var drawButton = new Element('button').update("Draw Cards");
+    drawButton.observe('click',action_draw);
+    var goldButton = new Element('button').update("Take 2 Gold");
+    goldButton.observe('click',action_gold);
+    var instructions = new Element('div').addClassName("instructions").update("What action will you take?");
+    chooser.insert(instructions);
+    choices.insert(drawButton);
+    choices.insert(goldButton);
+    chooser.insert(choices);
+    $("main").insert({top: chooser});
+}
+
+function action_draw() {
+    var data = JSON.stringify({"pid": myPlayerID, "action":"draw_cards"});
+    new Ajax.Request('/game/action',
+    {
+        method:'post',
+        parameters: {"data": data},
+        onSuccess: function(transport){
+            action_draw_return(transport);
+        },
+        onFailure: function(transport){
+        $("ajax_error").update(transport.responseText);
+        }
+    });
+}
+
+function action_draw_return(transport){
+    var data = transport.responseText.evalJSON();
+    console.log(data);
+    var drawn = data["drawn_cards"];
+    var chooser = $("chooser");
+    var choices = new Element("div").addClassName("choices");
+    console.log(drawn);
+    for (var i = 0; i < drawn.length ; i++){
+        var card = card_for_index(drawn[i]);
+        console.log(card);
+        choices.insert(card);
+    }
+    chooser.update(choices);
+
+}
+
+function action_gold() {
+    
+    take_action();
+}
+
+function take_action() {
+    $("chooser").remove();
+    //do swiches for different "on action" characters.
+}
+
 function choose_character(character_list){
-    chooser = new Element('div').writeAttribute("id", "chooser");
-    characters = new Element('ol').addClassName("characters");
-    cids = $A(character_list);
+    var chooser = new Element('div').writeAttribute("id", "chooser");
+    var instructions = new Element('div').addClassName("instructions").update("Choose a Character?");
+    chooser.insert(instructions);
+    var characters = new Element('ol').addClassName("characters");
+    var cids = $A(character_list);
     for (var i=0; i < cids.length; i ++){
-        char_element = character_element(cids[i]);
+        var char_element = character_element(cids[i]);
         char_element.writeAttribute("id","choose_character_" + cids[i]);
         characters.insert(char_element);
         char_element.observe('click',select_character);
@@ -330,14 +394,14 @@ function choose_character(character_list){
         char_element.addClassName("button");
     }
     chooser.insert(characters);
-    choose_button = new Element('button').update('Choose Character');
-    choose_button.observe('click',choose_selected);
+    var choose_button = new Element('button').update('Choose Character');
+    choose_button.observe('click',choose_selected_character);
     chooser.insert(choose_button);
     $("action_header").update("Please choose a character");
     $("main").insert({top: chooser});
 }
 
-function choose_selected(event){
+function choose_selected_character(event){
     if (currently_selected_character == null){
         return;
     }

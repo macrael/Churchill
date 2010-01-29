@@ -131,12 +131,16 @@ def joining_poll(player_id,player_count):
     print "returning string: " + json_string
     return json_string
 
-def status_poll(pid, turn):
+def status_poll(pid, turn): #may need to send mode? or just need a good distributed message system.
     game = Player.objects.get(pk=pid).game
     condLock = game_locks[game.pk];
     condLock.acquire()
     game_turn = game.turn
+    debug_loop = 0
     while game_turn == turn :
+        debug_loop += 1
+        if debug_loop > 1 :
+            print "INTERESTING: the poll has looped. Might not need to loop for broadcasting"
         player = Player.objects.get(pk=pid)
         game = player.game
         if game.turn == player.number :
@@ -162,6 +166,9 @@ def status_poll(pid, turn):
         gameD["mode"] = game.round_mode
         if mode == 1 :
             gameD["remaining_characters"] = csstr_to_list(game.remaining_characters)
+        elif mode == 2 :
+            #not sure there is anything for us to do here.
+            print "mode 2"
         else :
             print "HMM.. Not ready for this mode."
     
@@ -195,15 +202,42 @@ def take_action(pid, actionD):
         player.save()
         game.remaining_characters = list_to_csstr(remaining)
         game.save()
+        #these next two things are done at the end of every turn.
+        next_turn(game)
+        lock.notifyAll()
+        
+    if action == "draw_cards" :
+        if "draw_count" in actionD :
+            draw_count = actionD["draw_count"]
+        else :
+            draw_count = 2
+        drawn_cards = []
+        for i in range(draw_count) :
+            drawn_cards.append(draw_card(game))
+        info["drawn_cards"] = drawn_cards
+        
+    if action == "discard_cards" :
+        if "chosen_card" in actionD :
+            hand = csstr_to_list(player.hand)
+            hand.append(actionD["chosen_card"])
+            player.hand = list_to_csstr(hand)
+            player.save()
+        discards = actionD["discards"]
+        #for now, do nothing. One day may have to keep track of these things and reshuffle if the whole deck is used.
+    if action == "take_gold" :
+        player.gold += 2
+        player.save()
     
     
-    next_turn(game)
-    lock.notifyAll()
+    #action == "play_card"
+    #action == "invoke_ability"
+    #action == "end_turn"
+    
     lock.release()
     
     return json.dumps(info)
-    
-    
+
+
 def next_turn(game):
     if game.round_mode == 1 :
         turn = game.turn
@@ -213,12 +247,32 @@ def next_turn(game):
         if turn == game.king :
             #mode is over.
             game.round_mode = 2
-            
-    else :
-        print "Hmm. not ready for this mode."
+            game.turn = -1
+    if game.round_mode == 2 :
+        players = game.player_set.all()
+        turn_order = game.turn
+        if turn_order != -1 :
+            curr_player = players[game.turn]
+            #assert curr_player has a character.
+            turn_order = curr_player.character % 9
+        player = None
+        while player == None and turn_order < 9 :
+            turn_order += 1
+            player = player_with_character(players, turn_order)
+        if player == None :
+            game.round_mode = 1
+            game.turn = game.king
+        else :
+            game.turn = player.number
         
     print "Game Turn is now:", game.turn, "mode:",game.round_mode
     game.save()
+
+def player_with_character(players, char_turn):
+    for player in players :
+        if player.character % 9 == char_turn  :
+            return player
+    return None
 
 def draw_card(game):
     #This removes the first card from the deck and returns that number. 

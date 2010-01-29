@@ -249,6 +249,15 @@ div.unchar {
     bottom:0;
 }
 
+#chooser .choices{
+    width: 800px;
+	height: 150px;
+	margin: 200px auto 0 auto;
+	padding: 0;
+	float: none;
+	text-align:center;
+}
+
 #chooser .characters {
 	width: 800px;
 	height: 150px;
@@ -270,13 +279,6 @@ div.unchar {
     background-color: lightgoldenrodyellow;
 }
 
-.choose_container {
-    /* border-top: 1px solid #008020; */
-    margin-top: 4px;
-    text-align: center;
-    display: none;
-}
-
-.selected .choose_container {
-    display: inline;
+#chooser .instructions {
+    background-color: white;
 }
